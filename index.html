@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JG Soluções Elétricas | Instalações, Manutenção e Energia Solar na Bahia</title>
+<meta name="description" content="JG Soluções Elétricas: instalação elétrica residencial e comercial, manutenção, quadros de energia e energia solar. Atendimento em toda a Bahia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#060D1C;
+    --navy:#0A1830;
+    --navy-mid:#122A4E;
+    --navy-line: rgba(255,255,255,0.08);
+    --gold:#F5B942;
+    --gold-bright:#FFD873;
+    --blue:#3FD0FF;
+    --ink:#F4F6FA;
+    --slate:#93A3C2;
+    --slate-dim:#5C6C8C;
+    --danger-glow: 0 0 40px rgba(245,185,66,0.35);
+    --radius: 14px;
+    --maxw: 1180px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--navy-deep);
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+  ::selection{background:var(--gold);color:var(--navy-deep);}
+
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:2;}
+
+  h1,h2,h3,.display{
+    font-family:'Chakra Petch',sans-serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    line-height:1.05;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:22px;height:1px;
+    background:var(--gold);
+    display:inline-block;
+  }
+
+  /* ===== Background circuit canvas ===== */
+  #circuit-bg{
+    position:fixed;
+    inset:0;
+    width:100%;height:100%;
+    z-index:0;
+    opacity:0.55;
+    pointer-events:none;
+  }
+  .grain{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:3px 3px;
+    opacity:0.5;
+  }
+
+  /* ===== Live wire spine (signature element) ===== */
+  #wire-spine{
+    position:absolute;
+    top:0; left:50%;
+    width:2px;
+    height:100%;
+    transform:translateX(-50%);
+    z-index:1;
+    pointer-events:none;
+  }
+  #wire-spine svg{width:100%;height:100%;overflow:visible;}
+  .spine-path{
+    fill:none;
+    stroke:url(#spineGrad);
+    stroke-width:2;
+    stroke-dasharray:6 10;
+    animation: dashflow 1.6s linear infinite;
+    opacity:0.5;
+  }
+  @keyframes dashflow{ to{ stroke-dashoffset:-32; } }
+  .spine-node{
+    fill:var(--navy-deep);
+    stroke:var(--gold);
+    stroke-width:2;
+  }
+  .spine-node.pulse{
+    animation: nodepulse 2.4s ease-in-out infinite;
+  }
+  @keyframes nodepulse{
+    0%,100%{ r:5; filter:drop-shadow(0 0 0 rgba(245,185,66,0)); }
+    50%{ r:6.5; filter:drop-shadow(0 0 10px rgba(245,185,66,0.9)); }
+  }
+
+  /* ===== Header ===== */
+  header{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:50;
+    padding:18px 0;
+    backdrop-filter: blur(14px);
+    background:linear-gradient(to bottom, rgba(6,13,28,0.85), rgba(6,13,28,0.4));
+    border-bottom:1px solid transparent;
+    transition:border-color .3s ease, padding .3s ease;
+  }
+  header.scrolled{
+    border-bottom-color:var(--navy-line);
+    padding:12px 0;
+  }
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:12px;
+    font-family:'Chakra Petch',sans-serif;
+    font-weight:700;
+    font-size:17px;
+    letter-spacing:0.02em;
+  }
+  .brand img{
+    width:40px;height:40px;
+    border-radius:9px;
+    box-shadow:0 0 0 1px var(--navy-line), 0 0 18px rgba(245,185,66,0.25);
+  }
+  .brand small{
+    display:block;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:400;
+    font-size:9.5px;
+    letter-spacing:0.14em;
+    color:var(--slate);
+    text-transform:uppercase;
+    margin-top:2px;
+  }
+  .nav-links{
+    display:flex;
+    gap:34px;
+    font-size:14.5px;
+    font-weight:600;
+  }
+  .nav-links a{
+    position:relative;
+    color:var(--slate);
+    transition:color .25s ease;
+    padding:4px 0;
+  }
+  .nav-links a::after{
+    content:'';
+    position:absolute;left:0;bottom:0;
+    width:0;height:2px;
+    background:var(--gold);
+    transition:width .25s ease;
+  }
+  .nav-links a:hover{color:var(--ink);}
+  .nav-links a:hover::after{width:100%;}
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    font-weight:700;
+    font-size:14px;
+    padding:13px 24px;
+    border-radius:999px;
+    white-space:nowrap;
+    transition:transform .25s cubic-bezier(.2,.9,.3,1.3), box-shadow .25s ease, background .25s ease;
+  }
+  .btn-gold{
+    background:linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color:var(--navy-deep);
+    box-shadow:0 8px 24px -6px rgba(245,185,66,0.55);
+  }
+  .btn-gold:hover{transform:translateY(-2px) scale(1.02); box-shadow:0 12px 30px -6px rgba(245,185,66,0.75);}
+  .btn-ghost{
+    border:1px solid var(--navy-line);
+    color:var(--ink);
+  }
+  .btn-ghost:hover{border-color:var(--gold); background:rgba(245,185,66,0.06); transform:translateY(-2px);}
+  .btn svg{width:16px;height:16px;}
+
+  .menu-toggle{display:none;width:26px;height:20px;position:relative;z-index:60;}
+  .menu-toggle span{
+    position:absolute;left:0;width:100%;height:2px;background:var(--ink);
+    transition:all .3s ease;
+  }
+  .menu-toggle span:nth-child(1){top:0;}
+  .menu-toggle span:nth-child(2){top:9px;}
+  .menu-toggle span:nth-child(3){top:18px;}
+  .menu-toggle.open span:nth-child(1){transform:translateY(9px) rotate(45deg);}
+  .menu-toggle.open span:nth-child(2){opacity:0;}
+  .menu-toggle.open span:nth-child(3){transform:translateY(-9px) rotate(-45deg);}
+
+  /* ===== Hero ===== */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    padding:150px 0 90px;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:40px;
+    align-items:center;
+  }
+  .hero-eyebrow{margin-bottom:22px;}
+  .hero h1{
+    font-size:clamp(38px, 6vw, 68px);
+    margin-bottom:22px;
+  }
+  .hero h1 .accent{
+    color:var(--gold);
+    position:relative;
+    white-space:nowrap;
+  }
+  .hero p.lead{
+    font-size:17px;
+    color:var(--slate);
+    max-width:480px;
+    line-height:1.65;
+    margin-bottom:34px;
+  }
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:44px;}
+
+  .trust-chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 22px;
+  }
+  .trust-chips li{
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;
+    color:var(--slate);
+    font-weight:600;
+  }
+  .trust-chips svg{width:15px;height:15px;color:var(--gold);flex-shrink:0;}
+
+  /* Hero visual: animated bolt */
+  .hero-visual{
+    position:relative;
+    aspect-ratio:1/1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .hero-visual .ring{
+    position:absolute;
+    border-radius:50%;
+    border:1px solid var(--navy-line);
+  }
+  .ring1{width:100%;height:100%;animation:spin 60s linear infinite;}
+  .ring2{width:76%;height:76%;border-style:dashed;border-color:rgba(245,185,66,0.25);animation:spin 40s linear infinite reverse;}
+  .ring3{width:52%;height:52%;animation:spin 30s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .ring1 .orbit-dot, .ring3 .orbit-dot{
+    position:absolute;
+    width:9px;height:9px;
+    border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 14px 3px rgba(245,185,66,0.8);
+    top:-4.5px;left:50%;
+    transform:translateX(-50%);
+  }
+  .ring3 .orbit-dot{background:var(--blue); box-shadow:0 0 14px 3px rgba(63,208,255,0.8);}
+
+  .bolt-core{
+    position:relative;
+    width:38%;
+    filter:drop-shadow(0 0 30px rgba(245,185,66,0.55));
+    animation:boltFloat 4.5s ease-in-out infinite;
+  }
+  @keyframes boltFloat{
+    0%,100%{transform:translateY(0px);}
+    50%{transform:translateY(-10px);}
+  }
+  .bolt-core svg{width:100%;height:auto;}
+  .insta-badge{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    text-decoration:none;
+    transition:transform .3s ease;
+  }
+  .insta-badge:hover{transform:scale(1.05);}
+  .insta-handle{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    letter-spacing:0.04em;
+    color:var(--ink);
+    background:rgba(10,24,48,0.7);
+    border:1px solid var(--navy-line);
+    padding:6px 14px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .spark{
+    position:absolute;
+    width:4px;height:4px;
+    border-radius:50%;
+    background:var(--gold-bright);
+    box-shadow:0 0 8px 2px rgba(255,216,115,0.9);
+    animation:sparkPop 2.6s ease-in-out infinite;
+    opacity:0;
+  }
+  @keyframes sparkPop{
+    0%{opacity:0; transform:scale(0.4);}
+    15%{opacity:1; transform:scale(1);}
+    35%{opacity:0; transform:scale(0.3) translateY(-10px);}
+    100%{opacity:0;}
+  }
+
+  .scroll-hint{
+    position:absolute;
+    bottom:26px;left:50%;
+    transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.18em;
+    color:var(--slate-dim);
+    text-transform:uppercase;
+  }
+  .scroll-hint .line{
+    width:1px;height:34px;
+    background:linear-gradient(to bottom, var(--gold), transparent);
+    animation:scrollpulse 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollpulse{
+    0%{transform:scaleY(0.3); transform-origin:top;}
+    50%{transform:scaleY(1); transform-origin:top;}
+    100%{transform:scaleY(0.3); transform-origin:bottom;}
+  }
+
+  /* ===== Section shared ===== */
+  section{position:relative; padding:130px 0; z-index:2;}
+  .section-head{
+    max-width:640px;
+    margin-bottom:64px;
+  }
+  .section-head h2{
+    font-size:clamp(30px,4vw,44px);
+    margin-top:16px;
+  }
+  .section-head p{
+    color:var(--slate);
+    font-size:16px;
+    margin-top:18px;
+    line-height:1.7;
+  }
+
+  .reveal{
+    opacity:0;
+    transform:translateY(36px);
+    transition:opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal.in{opacity:1; transform:translateY(0);}
+  .reveal-delay-1{transition-delay:.08s;}
+  .reveal-delay-2{transition-delay:.16s;}
+  .reveal-delay-3{transition-delay:.24s;}
+  .reveal-delay-4{transition-delay:.32s;}
+
+  /* ===== Services ===== */
+  .services-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:22px;
+  }
+  .service-card{
+    position:relative;
+    background:linear-gradient(160deg, var(--navy-mid), var(--navy));
+    border:1px solid var(--navy-line);
+    border-radius:var(--radius);
+    padding:34px 30px;
+    overflow:hidden;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s ease, box-shadow .35s ease;
+  }
+  .service-card::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    transform:scaleX(0);
+    transition:transform .4s ease;
+  }
+  .service-card:hover{
+    transform:translateY(-8px);
+    border-color:rgba(245,185,66,0.4);
+    box-shadow:0 20px 44px -18px rgba(0,0,0,0.6);
+  }
+  .service-card:hover::before{transform:scaleX(1);}
+  .service-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    color:var(--slate-dim);
+    text-transform:uppercase;
+    margin-bottom:18px;
+    display:block;
+  }
+  .service-icon{
+    width:46px;height:46px;
+    border-radius:12px;
+    background:rgba(245,185,66,0.1);
+    border:1px solid rgba(245,185,66,0.25);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:20px;
+    color:var(--gold);
+    transition:background .3s ease, transform .3s ease;
+  }
+  .service-card:hover .service-icon{background:var(--gold); color:var(--navy-deep); transform:rotate(-6deg) scale(1.05);}
+  .service-icon svg{width:22px;height:22px;}
+  .service-card h3{font-size:20px;margin-bottom:10px;}
+  .service-card p{color:var(--slate);font-size:14.5px;line-height:1.65;}
+
+  /* ===== Process ===== */
+  .process{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+    position:relative;
+  }
+  .process::before{
+    content:'';
+    position:absolute;
+    top:26px;left:8%;right:8%;
+    height:1px;
+    background:repeating-linear-gradient(90deg, var(--navy-line) 0 8px, transparent 8px 16px);
+  }
+  .process-step{position:relative; padding:0 24px;}
+  .process-num{
+    width:52px;height:52px;
+    border-radius:50%;
+    background:var(--navy);
+    border:1px solid var(--gold);
+    color:var(--gold);
+    font-family:'JetBrains Mono',monospace;
+    font-weight:600;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:24px;
+    position:relative;
+    z-index:2;
+    box-shadow:0 0 0 6px var(--navy-deep);
+  }
+  .process-step h3{font-size:18px;margin-bottom:10px;}
+  .process-step p{color:var(--slate);font-size:14.5px;line-height:1.65;}
+
+  /* ===== Diferenciais ===== */
+  .diff-section{
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:60px;
+    align-items:center;
+  }
+  .diff-section-full{grid-template-columns:1fr;}
+  .diff-section-full .diff-list{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:28px 48px;
+  }
+  .diff-section-full .diff-item{border-bottom:none;padding-bottom:0;}
+
+  .insta-banner{
+    display:flex;
+    align-items:center;
+    gap:22px;
+    background:linear-gradient(120deg, var(--navy-mid), var(--navy));
+    border:1px solid var(--navy-line);
+    border-radius:20px;
+    padding:28px 34px;
+    transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .insta-banner:hover{
+    transform:translateY(-4px);
+    border-color:rgba(245,185,66,0.4);
+    box-shadow:0 20px 44px -18px rgba(0,0,0,0.6);
+  }
+  .insta-banner-icon{width:56px;height:56px;flex-shrink:0;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px var(--navy-line), 0 0 16px rgba(245,185,66,0.4);}
+  .insta-banner-icon img{width:100%;height:100%;object-fit:cover;}
+  .insta-banner-text{flex:1;}
+  .insta-banner-text h3{font-size:22px;}
+  .insta-banner-arrow{
+    width:42px;height:42px;
+    border-radius:50%;
+    border:1px solid var(--navy-line);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold);
+    flex-shrink:0;
+    transition:background .3s ease, border-color .3s ease;
+  }
+  .insta-banner-arrow svg{width:18px;height:18px;}
+  .insta-banner:hover .insta-banner-arrow{background:var(--gold); border-color:var(--gold); color:var(--navy-deep);}
+
+  .diff-list{display:flex;flex-direction:column;gap:28px;}
+  .diff-item{
+    display:flex;
+    gap:20px;
+    padding-bottom:28px;
+    border-bottom:1px solid var(--navy-line);
+  }
+  .diff-item:last-child{border-bottom:none;padding-bottom:0;}
+  .diff-num{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--slate-dim);
+    font-size:13px;
+    padding-top:4px;
+    min-width:34px;
+  }
+  .diff-item h3{font-size:19px;margin-bottom:8px;}
+  .diff-item p{color:var(--slate);font-size:14.5px;line-height:1.65;}
+
+  /* ===== Coverage / Bahia ===== */
+  .coverage{
+    background:var(--navy);
+    border-radius:24px;
+    padding:70px 60px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px;
+    align-items:center;
+    border:1px solid var(--navy-line);
+    position:relative;
+    overflow:hidden;
+  }
+  .coverage::after{
+    content:'';
+    position:absolute;
+    width:420px;height:420px;
+    background:radial-gradient(circle, rgba(245,185,66,0.12), transparent 70%);
+    top:-120px;right:-120px;
+    pointer-events:none;
+  }
+  .coverage-map{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .coverage-map svg{width:100%;max-width:340px;}
+  .map-pulse{
+    animation:mapPulse 2.2s ease-in-out infinite;
+    transform-origin:center;
+  }
+  @keyframes mapPulse{
+    0%,100%{r:4; opacity:1;}
+    50%{r:9; opacity:0.25;}
+  }
+  .coverage h2{font-size:clamp(28px,3.4vw,38px); margin-bottom:18px;}
+  .coverage p{color:var(--slate); font-size:16px; line-height:1.7; margin-bottom:26px;}
+
+  /* ===== Final CTA ===== */
+  .final-cta{
+    text-align:center;
+    padding-top:60px;
+    padding-bottom:60px;
+  }
+  .final-cta .eyebrow{justify-content:center;}
+  .final-cta .eyebrow::before{display:none;}
+  .final-cta h2{
+    font-size:clamp(32px,5vw,54px);
+    margin:20px auto 24px;
+    max-width:780px;
+  }
+  .final-cta p{color:var(--slate); font-size:16px; max-width:520px; margin:0 auto 38px;}
+  .cta-actions{display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+
+  /* ===== Footer ===== */
+  footer{
+    border-top:1px solid var(--navy-line);
+    padding:50px 0 34px;
+    position:relative;
+    z-index:2;
+  }
+  .footer-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:40px;
+    flex-wrap:wrap;
+    padding-bottom:34px;
+    margin-bottom:26px;
+    border-bottom:1px solid var(--navy-line);
+  }
+  .footer-brand{display:flex;align-items:center;gap:12px;}
+  .footer-brand img{width:44px;height:44px;border-radius:10px;}
+  .footer-brand div{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:16px;}
+  .footer-brand small{display:block;font-family:'JetBrains Mono',monospace;font-weight:400;font-size:10px;color:var(--slate-dim);letter-spacing:0.1em;margin-top:3px;text-transform:uppercase;}
+  .footer-links{display:flex;gap:60px;flex-wrap:wrap;}
+  .footer-col h4{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--slate-dim);
+    margin-bottom:16px;
+  }
+  .footer-col a{
+    display:block;
+    color:var(--slate);
+    font-size:14px;
+    margin-bottom:10px;
+    transition:color .2s ease;
+  }
+  .footer-col a:hover{color:var(--gold);}
+  .footer-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:14px;
+    font-size:12.5px;
+    color:var(--slate-dim);
+  }
+
+  /* ===== WhatsApp floating button ===== */
+  .fab-wa{
+    position:fixed;
+    bottom:26px;right:26px;
+    z-index:60;
+    width:60px;height:60px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#31D66B,#1EA854);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px -8px rgba(30,168,84,0.7);
+    animation:fabPulse 2.6s ease-in-out infinite;
+  }
+  .fab-wa svg{width:28px;height:28px;color:#fff;}
+  @keyframes fabPulse{
+    0%,100%{box-shadow:0 10px 30px -8px rgba(30,168,84,0.7);}
+    50%{box-shadow:0 10px 40px -4px rgba(30,168,84,0.95);}
+  }
+
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-visual{max-width:340px;margin:0 auto;order:-1;}
+    .services-grid{grid-template-columns:1fr;}
+    .process{grid-template-columns:1fr;gap:40px;}
+    .process::before{display:none;}
+    .diff-section{grid-template-columns:1fr;}
+    .diff-section-full .diff-list{grid-template-columns:1fr;}
+    .insta-banner{flex-wrap:wrap; text-align:center; justify-content:center; padding:26px 22px;}
+    .insta-banner-arrow{display:none;}
+    .coverage{grid-template-columns:1fr;padding:44px 26px;text-align:center;}
+    .coverage-map{order:-1;}
+    #wire-spine{display:none;}
+    .nav-links{
+      position:fixed;top:0;right:0;
+      height:100vh;width:min(78vw,320px);
+      background:var(--navy);
+      flex-direction:column;
+      justify-content:center;
+      align-items:flex-start;
+      padding:40px;
+      gap:26px;
+      transform:translateX(100%);
+      transition:transform .4s cubic-bezier(.2,.8,.2,1);
+      border-left:1px solid var(--navy-line);
+    }
+    .nav-links.open{transform:translateX(0);}
+    .menu-toggle{display:block;}
+    .nav .btn-gold{display:none;}
+    .nav-links .btn-gold{display:inline-flex; margin-top:10px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="circuit-bg"></canvas>
+<div class="grain"></div>
+
+<div id="wire-spine">
+  <svg preserveAspectRatio="none" viewBox="0 0 2 1000">
+    <defs>
+      <linearGradient id="spineGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F5B942"/>
+        <stop offset="50%" stop-color="#3FD0FF"/>
+        <stop offset="100%" stop-color="#F5B942"/>
+      </linearGradient>
+    </defs>
+    <line class="spine-path" x1="1" y1="0" x2="1" y2="1000"/>
+  </svg>
+</div>
+
+<header id="siteHeader">
+  <div class="wrap nav">
+    <a href="#top" class="brand">
+      <img src="assets/logo.jpg" alt="Logo JG Soluções Elétricas">
+      <span>JG SOLUÇÕES<br><small>Elétricas &middot; Bahia</small></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#servicos">Serviços</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#diferenciais">Diferenciais</a>
+      <a href="#atuacao">Área de atuação</a>
+      <a href="#contato" class="btn btn-gold">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5C10 9 9.4 7.6 9.2 7c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 3 4.7 4.1.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5.1-1.3C8.5 21.5 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.1c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.3.9.9-3.2-.2-.3C3.8 14.7 3.3 13.4 3.3 12c0-4.8 3.9-8.7 8.7-8.7s8.7 3.9 8.7 8.7-3.9 8.7-8.7 8.7z"/></svg>
+        Fale no WhatsApp
+      </a>
+    </nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow hero-eyebrow">JG SOLUÇÕES ELÉTRICAS &middot; ATENDIMENTO EM TODA A BAHIA</div>
+        <h1>Energia que <span class="accent">não falha</span>, do jeito que sua instalação merece.</h1>
+        <p class="lead">Instalação elétrica, quadros de energia, manutenção e energia solar com segurança, agilidade e o padrão técnico que sua casa ou empresa precisa.</p>
+        <div class="hero-cta">
+          <a href="https://wa.me/5577981110580" target="_blank" rel="noopener" class="btn btn-gold">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5C10 9 9.4 7.6 9.2 7c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 3 4.7 4.1.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5.1-1.3C8.5 21.5 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.1c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.3.9.9-3.2-.2-.3C3.8 14.7 3.3 13.4 3.3 12c0-4.8 3.9-8.7 8.7-8.7s8.7 3.9 8.7 8.7-3.9 8.7-8.7 8.7z"/></svg>
+            Solicitar orçamento
+          </a>
+          <a href="#servicos" class="btn btn-ghost">Ver serviços</a>
+        </div>
+        <ul class="trust-chips">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Orçamento sem compromisso</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Atendimento ágil</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Cobertura em toda a Bahia</li>
+        </ul>
+      </div>
+
+      <div class="hero-visual">
+        <div class="ring ring1"><div class="orbit-dot"></div></div>
+        <div class="ring ring2"></div>
+        <div class="ring ring3"><div class="orbit-dot"></div></div>
+        <div class="bolt-core">
+          <svg viewBox="0 0 100 140" fill="none">
+            <path d="M58 4 14 78h28l-8 58 46-80H52l6-52z" fill="url(#boltGrad)"/>
+            <defs>
+              <linearGradient id="boltGrad" x1="14" y1="4" x2="80" y2="136" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FFD873"/>
+                <stop offset="1" stop-color="#F5B942"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="spark" style="top:14%;left:20%;animation-delay:.2s;"></span>
+        <span class="spark" style="top:60%;left:78%;animation-delay:1s;"></span>
+        <span class="spark" style="top:78%;left:30%;animation-delay:1.8s;"></span>
+        <span class="spark" style="top:30%;left:82%;animation-delay:.7s;"></span>
+      </div>
+    </div>
+
+    <div class="scroll-hint"><span>Role a página</span><span class="line"></span></div>
+  </section>
+
+  <!-- SERVIÇOS -->
+  <section id="servicos">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">Serviços</div>
+        <h2>Tudo o que sua instalação elétrica precisa, em um só lugar.</h2>
+        <p>Da manutenção pontual à instalação completa: trabalhamos com segurança e o dimensionamento correto para cada ambiente.</p>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card reveal reveal-delay-1">
+          <span class="service-tag">Residencial &amp; Comercial</span>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V9l8-6 8 6v12"/><path d="M9 21v-8h6v8"/></svg></div>
+          <h3>Instalação elétrica</h3>
+          <p>Projetos e execução de instalações residenciais e comerciais, do ponto de luz ao circuito completo, seguindo as normas técnicas.</p>
+        </div>
+
+        <div class="service-card reveal reveal-delay-2">
+          <span class="service-tag">Correção &amp; prevenção</span>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2 2.5-2.5z"/></svg></div>
+          <h3>Manutenção e reparos</h3>
+          <p>Diagnóstico de falhas, curto-circuito, quedas de energia e reparos elétricos com atendimento ágil.</p>
+        </div>
+
+        <div class="service-card reveal reveal-delay-3">
+          <span class="service-tag">Segurança &amp; capacidade</span>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="1.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></div>
+          <h3>Quadros de energia</h3>
+          <p>Montagem e adequação de quadros de distribuição e padrão de entrada, com dimensionamento correto para sua demanda.</p>
+        </div>
+
+        <div class="service-card reveal reveal-delay-4">
+          <span class="service-tag">Economia &amp; sustentabilidade</span>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></div>
+          <h3>Energia solar</h3>
+          <p>Instalação de sistemas fotovoltaicos para reduzir sua conta de luz e ganhar independência energética.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section id="como-funciona">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">Como funciona</div>
+        <h2>Do primeiro contato à energia funcionando, sem complicação.</h2>
+      </div>
+      <div class="process">
+        <div class="process-step reveal reveal-delay-1">
+          <div class="process-num">01</div>
+          <h3>Contato e diagnóstico</h3>
+          <p>Você chama no WhatsApp, conta o que precisa e alinhamos os detalhes do serviço.</p>
+        </div>
+        <div class="process-step reveal reveal-delay-2">
+          <div class="process-num">02</div>
+          <h3>Orçamento sem compromisso</h3>
+          <p>Avaliamos a necessidade e enviamos um orçamento claro, sem letras miúdas.</p>
+        </div>
+        <div class="process-step reveal reveal-delay-3">
+          <div class="process-num">03</div>
+          <h3>Execução com segurança</h3>
+          <p>Serviço executado seguindo normas técnicas, com atenção a cada detalhe da instalação.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTAGRAM -->
+  <section id="instagram" style="padding-top:0;padding-bottom:0;">
+    <div class="wrap">
+      <a href="https://instagram.com/jgsolucoeseletricas" target="_blank" rel="noopener" class="insta-banner reveal">
+        <div class="insta-banner-icon">
+          <img src="assets/logo.jpg" alt="Logo JG Soluções Elétricas">
+        </div>
+        <div class="insta-banner-text">
+          <span class="eyebrow" style="margin-bottom:6px;">Siga no Instagram</span>
+          <h3>@jgsolucoeseletricas</h3>
+        </div>
+        <span class="insta-banner-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <!-- DIFERENCIAIS -->
+  <section id="diferenciais">
+    <div class="wrap diff-section diff-section-full">
+      <div>
+        <div class="eyebrow reveal">Diferenciais</div>
+        <h2 class="reveal" style="font-size:clamp(28px,3.6vw,40px);margin:16px 0 36px;">Por que fechar com a JG Soluções Elétricas.</h2>
+        <div class="diff-list">
+          <div class="diff-item reveal reveal-delay-1">
+            <span class="diff-num">01</span>
+            <div><h3>Segurança em primeiro lugar</h3><p>Cada instalação segue as normas técnicas para proteger sua família ou seu negócio.</p></div>
+          </div>
+          <div class="diff-item reveal reveal-delay-2">
+            <span class="diff-num">02</span>
+            <div><h3>Atendimento ágil</h3><p>Resposta rápida pelo WhatsApp e agendamento sem enrolação.</p></div>
+          </div>
+          <div class="diff-item reveal reveal-delay-3">
+            <span class="diff-num">03</span>
+            <div><h3>Orçamento transparente</h3><p>Você sabe exatamente o que está pagando, antes do serviço começar.</p></div>
+          </div>
+          <div class="diff-item reveal reveal-delay-4">
+            <span class="diff-num">04</span>
+            <div><h3>Cobertura estadual</h3><p>Atendimento em toda a Bahia, para residências e empresas.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÁREA DE ATUAÇÃO -->
+  <section id="atuacao">
+    <div class="wrap">
+      <div class="coverage">
+        <div>
+          <div class="eyebrow reveal">Área de atuação</div>
+          <h2 class="reveal">Atendemos residências e empresas em toda a Bahia.</h2>
+          <p class="reveal">Fale com a gente pelo WhatsApp informando sua cidade e o tipo de serviço — organizamos o atendimento e retornamos com o orçamento.</p>
+          <a href="https://wa.me/5577981110580" target="_blank" rel="noopener" class="btn btn-gold reveal">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5C10 9 9.4 7.6 9.2 7c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 3 4.7 4.1.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5.1-1.3C8.5 21.5 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.1c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.3.9.9-3.2-.2-.3C3.8 14.7 3.3 13.4 3.3 12c0-4.8 3.9-8.7 8.7-8.7s8.7 3.9 8.7 8.7-3.9 8.7-8.7 8.7z"/></svg>
+            Falar com a JG agora
+          </a>
+        </div>
+        <div class="coverage-map reveal">
+          <svg viewBox="0 0 300 320" fill="none">
+            <path d="M150 12 C 210 20, 250 55, 262 100 C 274 145, 268 190, 250 225 C 232 260, 200 288, 160 300 C 120 310, 80 296, 58 265 C 36 234, 30 190, 42 150 C 54 110, 45 75, 68 48 C 91 21, 120 8, 150 12 Z"
+              stroke="#F5B942" stroke-width="1.4" fill="rgba(245,185,66,0.05)"/>
+            <circle class="map-pulse" cx="150" cy="150" r="5" fill="#F5B942"/>
+            <circle cx="150" cy="150" r="3" fill="#FFD873"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section id="contato" class="final-cta">
+    <div class="wrap">
+      <div class="eyebrow reveal">Vamos resolver sua instalação</div>
+      <h2 class="reveal">Chame a JG Soluções Elétricas e receba seu orçamento agora.</h2>
+      <p class="reveal">Atendimento rápido pelo WhatsApp, sem compromisso, para residências e empresas em toda a Bahia.</p>
+      <div class="cta-actions reveal">
+        <a href="https://wa.me/5577981110580" target="_blank" rel="noopener" class="btn btn-gold">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5C10 9 9.4 7.6 9.2 7c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 3 4.7 4.1.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5.1-1.3C8.5 21.5 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.1c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.3.9.9-3.2-.2-.3C3.8 14.7 3.3 13.4 3.3 12c0-4.8 3.9-8.7 8.7-8.7s8.7 3.9 8.7 8.7-3.9 8.7-8.7 8.7z"/></svg>
+          (77) 98111-0580
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="assets/logo.jpg" alt="Logo JG Soluções Elétricas">
+        <div>JG Soluções Elétricas<small>Soluções em energia &middot; Bahia</small></div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Navegação</h4>
+          <a href="#servicos">Serviços</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#diferenciais">Diferenciais</a>
+          <a href="#atuacao">Área de atuação</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <a href="https://wa.me/5577981110580" target="_blank" rel="noopener">WhatsApp: (77) 98111-0580</a>
+          <a href="#top">Voltar ao topo</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> JG Soluções Elétricas. Todos os direitos reservados.</span>
+      <span>Atendimento em toda a Bahia</span>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/5577981110580" target="_blank" rel="noopener" class="fab-wa" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5C10 9 9.4 7.6 9.2 7c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 3 4.7 4.1.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5.1-1.3C8.5 21.5 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.1c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.3.9.9-3.2-.2-.3C3.8 14.7 3.3 13.4 3.3 12c0-4.8 3.9-8.7 8.7-8.7s8.7 3.9 8.7 8.7-3.9 8.7-8.7 8.7z"/></svg>
+</a>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Header scroll state
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Mobile menu
+  const toggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => {
+    toggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    toggle.classList.remove('open');
+    navLinks.classList.remove('open');
+  }));
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => io.observe(el));
+
+  // Circuit background canvas
+  const canvas = document.getElementById('circuit-bg');
+  const ctx = canvas.getContext('2d');
+  let w, h, nodes = [];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = document.body.scrollHeight;
+    canvas.style.height = h + 'px';
+    initNodes();
+  }
+
+  function initNodes(){
+    const count = Math.max(18, Math.floor((w*h)/90000));
+    nodes = [];
+    for(let i=0;i<count;i++){
+      nodes.push({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        vx: (Math.random()-0.5)*0.15,
+        vy: (Math.random()-0.5)*0.15,
+        r: Math.random()*1.4 + 0.6,
+        glow: Math.random() > 0.85
+      });
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const maxDist = 160;
+
+    for(let i=0;i<nodes.length;i++){
+      const n = nodes[i];
+      if(!reduceMotion){
+        n.x += n.vx; n.y += n.vy;
+        if(n.x < 0 || n.x > w) n.vx *= -1;
+        if(n.y < 0 || n.y > h) n.vy *= -1;
+      }
+    }
+
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = a.x-b.x, dy = a.y-b.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < maxDist){
+          const alpha = (1 - dist/maxDist) * 0.16;
+          ctx.strokeStyle = `rgba(63,208,255,${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y);
+          ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.fillStyle = n.glow ? 'rgba(245,185,66,0.55)' : 'rgba(147,163,194,0.35)';
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    if(!reduceMotion) requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+  if(reduceMotion) draw();
+</script>
+
+</body>
+</html>
